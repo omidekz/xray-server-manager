@@ -1,0 +1,114 @@
+#!/bin/env python3
+from uuid import uuid4
+import pickle
+import json
+from dataclasses import dataclass
+
+
+@dataclass
+class DB:
+    config_path: str
+
+
+def inbounds(config: dict): return config['inbounds']
+def settings(inb: dict): return inb['settings']
+def clients(inb_set: dict): return inb_set['clients']
+
+
+def select_inbound(config: dict):
+    return int(input('\n'.join(
+        [f'{ind}-{inb["tag"]}' for ind, inb in enumerate(inbounds(config))]) + ': '))
+
+
+def users():
+    for inb in inbounds(config):
+        print(inb['tag'])
+        tab = '\t'
+        for ind, cl in enumerate(clients(settings(inb))):
+            print(tab, ind, '-', cl['email'])
+    input('...')
+
+
+def add_users():
+    inb_ind = select_inbound(config)
+    emails = input('email : ').strip().split(',')
+    print(emails)
+    config['inbounds'][inb_ind]['settings']['clients'].extend(
+        [{'email': email, 'flow': '', 'id': str(uuid4())} for email in emails])
+
+
+def get_clients(inb_ind, inds: str, ex=False):
+    inds = tuple(map(int, inds.split()))
+    inbound = inbounds(config)[inb_ind]
+    return tuple(
+        map(lambda i: i[1], filter(lambda i: (i[0] not in inds) if ex else (i[0] in inds), enumerate(clients(settings(inbound))))))
+
+
+def remove_users():
+    inb_ind = select_inbound(config)
+    ids = input('enter ids : ')
+    new_cliends = get_clients(inb_ind, ids, ex=True)
+    config['inbounds'][inb_ind]['settings']['clients'] = new_cliends
+    print('done!')
+
+
+def init():
+    try:
+        with open('.db', 'rb') as file:
+            db = pickle.load(file)
+    except:
+        db = DB(config_path=input(
+            'config path [default /root] : ').strip() or '/root/x')
+        with open('.db', 'wb') as file:
+            pickle.dump(db, file)
+    with open(db.config_path) as file:
+        config = json.load(file)
+
+    return db, config
+
+
+def get_command():
+    print(f'''
+        [-1] - exit
+        [0] - commit changes to {db.config_path}
+        [1] - users
+        [2] - add user
+        [3] - remove users
+        [4] - export link
+    : ''', end='', flush=True)
+    return input()
+
+
+def export_links():
+    inb_ind = select_inbound(config)
+    ids = input('enter ids: ')
+    clz = get_clients(inb_ind, ids)
+    inb = inbounds(config)[inb_ind]
+    ss = inb['streamSettings']
+    tls = ss['tlsSettings']
+    for cl in clz:
+        print(
+            f'''
+vless://{cl['id']}@{tls['serverName']}:{inb['port']}?mode=gun&security={ss['security']}&encryption=none&alpn=h2&fp=chrome&type={ss['network']}&serviceName=&sni={tls['settings']['serverName']}#{inb['tag']}-{cl['email']}''')
+
+
+if __name__ == '__main__':
+
+    db, config = init()
+
+    end = False
+    while not end:
+        inp = get_command()
+        if inp == '-1':
+            exit()
+        elif inp == '0':
+            with open(db.config_path, 'w') as file:
+                json.dump(config, file)
+        elif inp == '1':
+            users()
+        elif inp == '2':
+            add_users()
+        elif inp == '3':
+            remove_users()
+        elif inp == '4':
+            export_links()
