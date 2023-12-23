@@ -1,0 +1,101 @@
+{
+    "logs": {
+        "level": "info"
+    },
+    "inbounds": [
+        {
+            "listen": null,
+            "port": 443,
+            "protocol": "vless",
+            "settings": {
+                "clients": [],
+                "decryption": "none",
+                "fallbacks": [
+                    {
+                        "dest": 80
+                    }
+                ]
+            },
+            "sniffing": {
+                "destOverride": [
+                    "http",
+                    "tls",
+                    "quic",
+                    "fakedns"
+                ],
+                "enabled": false
+            },
+            "streamSettings": {
+                "grpcSettings": {
+                    "multiMode": false,
+                    "serviceName": "",
+                    "initial_window_size": 65536
+                },
+                "network": "grpc",
+                "security": "tls",
+                "tlsSettings": {
+                    "alpn": [
+                        "h2"
+                    ],
+                    "certificates": [
+                        {
+                            "certificateFile": "PUBLIC_KEY",
+                            "keyFile": "PRIV_KEY",
+                            "ocspStapling": 3600
+                        }
+                    ],
+                    "cipherSuites": "",
+                    "maxVersion": "1.3",
+                    "minVersion": "1.3",
+                    "rejectUnknownSni": false,
+                    "serverName": "discord.com",
+                    "settings": {
+                        "allowInsecure": false,
+                        "domains": [],
+                        "fingerprint": "chrome",
+                        "serverName": "CERTED_DOMAIN"
+                    }
+                }
+            },
+            "tag": "inbound-443"
+        }
+    ],
+    "log": {
+        "error": "./error.log",
+        "loglevel": "warning"
+    },
+    "outbounds": [
+        {
+            "protocol": "freedom",
+            "settings": {
+                "domainStrategy": "UseIPv4"
+            },
+            "tag": "IPv4"
+        },
+        {
+            "protocol": "freedom",
+            "settings": {}
+        },
+        {
+            "protocol": "blackhole",
+            "settings": {},
+            "tag": "blocked"
+        },
+        {
+            "protocol": "freedom",
+            "tag": "direct"
+        }
+    ],
+    "routing": {
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "outboundTag": "blocked",
+                "protocol": [
+                    "bittorrent"
+                ],
+                "type": "field"
+            }
+        ]
+    }
+}

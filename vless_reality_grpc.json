@@ -1,0 +1,98 @@
+{
+    "logs": {
+        "level": "info"
+    },
+    "inbounds": [
+        {
+            "listen": null,
+            "port": 443,
+            "protocol": "vless",
+            "settings": {
+                "clients": [],
+                "decryption": "none",
+                "fallbacks": [
+                    {
+                        "dest": 80
+                    }
+                ]
+            },
+            "sniffing": {
+                "destOverride": [
+                    "http",
+                    "tls",
+                    "quic"
+                ],
+                "enabled": true
+            },
+            "streamSettings": {
+                "grpcSettings": {
+                    "multiMode": false,
+                    "serviceName": ""
+                },
+                "network": "grpc",
+                "realitySettings": {
+                    "dest": "discord.gg:443",
+                    "maxClient": "",
+                    "maxTimediff": 0,
+                    "minClient": "",
+                    "privateKey": "<PRIV_KEY:43chr>",
+                    "serverNames": [
+                        "discord.gg",
+                        "www.discord.gg"
+                    ],
+                    "settings": {
+                        "fingerprint": "chrome",
+                        "publicKey": "<PUBLIC_KEY:43chrWith_>",
+                        "serverName": "",
+                        "spiderX": "/" 
+                    },
+                    "shortIds": [
+                        "e6c3ad2e"
+                    ],
+                    "show": false,
+                    "xver": 0
+                },
+                "security": "reality"
+            },
+            "tag": "inbound-443"
+        }
+    ],
+    "log": {
+        "error": "./error.log",
+        "loglevel": "warning"
+    },
+    "outbounds": [
+        {
+            "protocol": "freedom",
+            "settings": {
+                "domainStrategy": "UseIPv4"
+            },
+            "tag": "IPv4"
+        },
+        {
+            "protocol": "freedom",
+            "settings": {}
+        },
+        {
+            "protocol": "blackhole",
+            "settings": {},
+            "tag": "blocked"
+        },
+        {
+            "protocol": "freedom",
+            "tag": "direct"
+        }
+    ],
+    "routing": {
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "outboundTag": "blocked",
+                "protocol": [
+                    "bittorrent"
+                ],
+                "type": "field"
+            }
+        ]
+    }
+}
