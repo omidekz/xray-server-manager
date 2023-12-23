@@ -53,14 +53,8 @@ def remove_users():
 
 
 def init():
-    try:
-        with open('.db', 'rb') as file:
-            db = pickle.load(file)
-    except:
-        db = DB(config_path=input(
-            'config path [default /root] : ').strip() or '/root/x')
-        with open('.db', 'wb') as file:
-            pickle.dump(db, file)
+    db = DB(config_path=input(
+        'config path [default /root] : ').strip() or '/root/x')
     with open(db.config_path) as file:
         config = json.load(file)
 
@@ -68,9 +62,9 @@ def init():
 
 
 def get_command():
-    print(f'''
+    print('''
         [-1] - exit
-        [0] - commit changes to {db.config_path}
+        [0] - commit db
         [1] - users
         [2] - add user
         [3] - remove users
@@ -82,15 +76,28 @@ def get_command():
 def export_links():
     inb_ind = select_inbound(config)
     ids = input('enter ids: ')
+    if '-' in ids:
+        ids = ' '.join(tuple(map(str,range(*tuple(map(int, ids.strip().split('-')))))))
+        print (ids)
     clz = get_clients(inb_ind, ids)
     inb = inbounds(config)[inb_ind]
     ss = inb['streamSettings']
-    tls = ss['tlsSettings']
-    for cl in clz:
-        print(
-            f'''
-vless://{cl['id']}@{tls['serverName']}:{inb['port']}?mode=gun&security={ss['security']}&encryption=none&alpn=h2&fp=chrome&type={ss['network']}&serviceName=&sni={tls['settings']['serverName']}#{inb['tag']}-{cl['email']}''')
-
+    if 'tlsSettings' in ss:
+        tls = ss['tlsSettings']
+        for cl in clz:
+            print(
+f'''
+vless://{cl['id']}@{tls['serverName']}:{inb['port']}?mode=gun&security={ss['security']}&encryption=none&alpn=h2&fp=chrome&type={ss['network']}&serviceName=&sni={tls['settings']['serverName']}#{inb['tag']}-{cl['email']}
+''')
+    elif 'realitySettings' in ss:
+        ipport = input('enter ip-port: ')
+        reality = ss['realitySettings']
+        for cl in clz:
+            print(
+f'''
+vless://{cl['id']}@{ipport}?type=grpc&serviceName=&security=reality&fp={reality['settings']['fingerprint']}&pbk={reality['settings']['publicKey']}&sni={reality['dest'].split(':')[0]}&sid={reality['shortIds'][0]}&spx=%2F#{inb['tag']}-{cl['email']}
+'''
+            )
 
 if __name__ == '__main__':
 
