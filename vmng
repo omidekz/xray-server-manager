@@ -53,8 +53,11 @@ def remove_users():
 
 
 def init():
-    db = DB(config_path=input(
-        'config path [default /root] : ').strip() or '/root/x')
+    import glob
+
+    configs = glob.glob('configs/*.json', root_dir='.')
+    db = DB(config_path=configs[int(input(
+        '\n'.join([f'{ind} - {cn}' for ind, cn in enumerate(configs)])))])
     with open(db.config_path) as file:
         config = json.load(file)
 
@@ -77,8 +80,9 @@ def export_links():
     inb_ind = select_inbound(config)
     ids = input('enter ids: ')
     if '-' in ids:
-        ids = ' '.join(tuple(map(str,range(*tuple(map(int, ids.strip().split('-')))))))
-        print (ids)
+        ids = ' '.join(
+            tuple(map(str, range(*tuple(map(int, ids.strip().split('-')))))))
+        print(ids)
     clz = get_clients(inb_ind, ids)
     inb = inbounds(config)[inb_ind]
     ss = inb['streamSettings']
@@ -86,7 +90,7 @@ def export_links():
         tls = ss['tlsSettings']
         for cl in clz:
             print(
-f'''
+                f'''
 vless://{cl['id']}@{tls['serverName']}:{inb['port']}?mode=gun&security={ss['security']}&encryption=none&alpn=h2&fp=chrome&type={ss['network']}&serviceName=&sni={tls['settings']['serverName']}#{inb['tag']}-{cl['email']}
 ''')
     elif 'realitySettings' in ss:
@@ -94,10 +98,11 @@ vless://{cl['id']}@{tls['serverName']}:{inb['port']}?mode=gun&security={ss['secu
         reality = ss['realitySettings']
         for cl in clz:
             print(
-f'''
+                f'''
 vless://{cl['id']}@{ipport}?type=grpc&serviceName=&security=reality&fp={reality['settings']['fingerprint']}&pbk={reality['settings']['publicKey']}&sni={reality['dest'].split(':')[0]}&sid={reality['shortIds'][0]}&spx=%2F#{inb['tag']}-{cl['email']}
 '''
             )
+
 
 if __name__ == '__main__':
 
