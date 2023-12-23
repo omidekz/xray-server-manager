@@ -27,7 +27,8 @@
             "streamSettings": {
                 "grpcSettings": {
                     "multiMode": false,
-                    "serviceName": ""
+                    "serviceName": "",
+                    "initial_window_size": 65536
                 },
                 "network": "grpc",
                 "realitySettings": {
@@ -44,7 +45,7 @@
                         "fingerprint": "chrome",
                         "publicKey": "<PUBLIC_KEY:43chrWith_>",
                         "serverName": "",
-                        "spiderX": "/" 
+                        "spiderX": "/"
                     },
                     "shortIds": [
                         "e6c3ad2e"
