@@ -1,4 +1,7 @@
 #!/bin/env bash
-
-docker run --rm --name=xr -d -v /etc/letsencrypt:/etc/letsencrypt -v $(pwd)/config.json:/etc/xray/config.json \
-	-p 2053:2053 -p 2083:2083 -p 443:443 teddysun/xray
+cluster=$(echo $1 | cut -d _ -f 1)
+port=$(echo $1 | cut -d _ -f 2)
+echo "$cluster $port"
+echo "$(pwd)/12"
+docker run --rm --name=$cluster -d -v /etc/letsencrypt:/etc/letsencrypt -v $(pwd)/$1:/etc/xray/config.json \
+	-p $port:$port teddysun/xray
