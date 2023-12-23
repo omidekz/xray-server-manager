@@ -57,7 +57,7 @@ def init():
 
     configs = glob.glob('configs/*.json', root_dir='.')
     db = DB(config_path=configs[int(input(
-        'select source config\n' '\n'.join([f'{ind} - {cn}' for ind, cn in enumerate(configs)]) + ' : '))])
+        'select source config\n' + '\n'.join([f'{ind} - {cn}' for ind, cn in enumerate(configs)]) + ' : '))])
     with open(db.config_path) as file:
         config = json.load(file)
 
