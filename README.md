@@ -9,7 +9,7 @@
 
 ## Run scrip usage
 
-`./run config-name.json`
+`./run configs/config-name.json`
 
 ** NOTE that `config-name` has to follow the following structure
 
