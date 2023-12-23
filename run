@@ -1,5 +1,5 @@
 #!/bin/env bash
-cluster=$(echo $1 | cut -d _ -f 1)
+cluster=$(echo $1 | cut -d _ -f 1 | cut -d / -f 2)
 port=$(echo $1 | cut -d _ -f 2)
 echo "$cluster $port"
 echo "$(pwd)/12"
