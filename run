@@ -1,3 +1,4 @@
 #!/bin/env bash
+
 docker run --rm --name=xr -d -v /etc/letsencrypt:/etc/letsencrypt -v $(pwd)/config.json:/etc/xray/config.json \
 	-p 2053:2053 -p 2083:2083 -p 443:443 teddysun/xray
