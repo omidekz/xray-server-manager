@@ -5,12 +5,12 @@
 - configuration templates
 - configuration's runner script
 - manage by cmd `./vmng`
-- manage by telegram bot (development)
   - commit changes
   - users
   - add user
   - remove users
   - export link
+- manage by telegram bot (development)
 ## Run scrip usage
 
 `./run configs/config-name.json`
