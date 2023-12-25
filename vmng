@@ -3,6 +3,8 @@ from uuid import uuid4
 import pickle
 import json
 from dataclasses import dataclass
+import subprocess
+
 
 
 @dataclass
@@ -94,7 +96,8 @@ def export_links():
 vless://{cl['id']}@{tls['serverName']}:{inb['port']}?mode=gun&security={ss['security']}&encryption=none&alpn=h2&fp=chrome&type={ss['network']}&serviceName=&sni={tls['settings']['serverName']}#{inb['tag']}-{cl['email']}
 ''')
     elif 'realitySettings' in ss:
-        ipport = input('enter ip-port: ')
+        ip = subprocess.run('curl ip.hetzner.com -L'.split(), check=True, stdout=subprocess.PIPE).stdout.decode()
+        ipport = f"{ip}:{inb['port']}"
         reality = ss['realitySettings']
         for cl in clz:
             print(
